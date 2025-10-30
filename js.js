@@ -3,30 +3,36 @@ document.addEventListener("DOMContentLoaded", () => {
   const swiperInstances = [];
   let isSwiperActive = false;
   let resizeTimeout;
+  let isResizePending = false;
 
   function initSwipers() {
     const swipers = document.querySelectorAll(".swiper");
 
     swipers.forEach((container, index) => {
-      if (swiperInstances[index]) {
-        return;
-      }
+      if (!container) return;
+      if (swiperInstances[index]) return;
 
       try {
+        const paginationEl = container.querySelector(".swiper-pagination");
+        const nextEl = container.querySelector(".swiper-button-next");
+        const prevEl = container.querySelector(".swiper-button-prev");
+
+        const paginationOptions = paginationEl
+          ? { el: paginationEl, clickable: true }
+          : false;
+        const navigationOptions = nextEl && prevEl ? { nextEl, prevEl } : false;
+
         swiperInstances[index] = new Swiper(container, {
           slidesPerView: 1,
           spaceBetween: 16,
           loop: true,
-          pagination: {
-            el: container.querySelector(".swiper-pagination"),
-            clickable: true,
-          },
-          navigation: {
-            nextEl: container.querySelector(".swiper-button-next"),
-            prevEl: container.querySelector(".swiper-button-prev"),
-          },
+          pagination: paginationOptions,
+          navigation: navigationOptions,
+          observer: true,
         });
-      } catch (error) {}
+      } catch (error) {
+        console.error("Ошибка при инициализации Swiper:", error);
+      }
     });
   }
 
@@ -37,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
         swiperInstances[index] = null;
       }
     });
+    swiperInstances.length = 0;
   }
 
   function checkScreenWidth() {
@@ -45,15 +52,23 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isDesktop && !isSwiperActive) {
       initSwipers();
       isSwiperActive = true;
+      console.log("Состояние слайдера: активен");
     } else if (!isDesktop && isSwiperActive) {
       destroySwipers();
       isSwiperActive = false;
+      console.log("Состояние слайдера: неактивен");
     }
   }
 
   function handleResize() {
+    if (isResizePending) return;
+    isResizePending = true;
+
     clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(checkScreenWidth, 150);
+    resizeTimeout = setTimeout(() => {
+      checkScreenWidth();
+      isResizePending = false;
+    }, 150);
   }
 
   window.addEventListener("resize", handleResize);

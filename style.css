@@ -1,25 +1,68 @@
+:root {
+  /* Цвета */
+  --color-text-primary: #222;
+  --color-text-white: #fff;
+  --color-background-white: #fff;
+  --color-primary: #007aff;
+  --color-overlay-light: rgba(0, 0, 0, 0.35);
+  --color-overlay-medium: rgba(0, 0, 0, 0.45);
+  --color-overlay-dark: rgba(0, 0, 0, 0.6);
+  --gradient-background: linear-gradient(180deg, #f7f8fa 0%, #e3e7ed 100%);
+  --shadow-default: 0 6px 20px rgba(0, 0, 0, 0.1);
+
+  /* Размеры и отступы */
+  --spacing-xs: 10px;
+  --spacing-sm: 20px;
+  --spacing-md: 30px;
+  --spacing-lg: 40px;
+  --button-size: 46px;
+  --min-slide-height: 350px;
+
+  /* Радиусы скругления */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-full: 50%;
+
+  /* Длительности переходов */
+  --transition-fast: 0.2s;
+  --transition-normal: 0.4s;
+  --transition-medium: 0.5s;
+  --transition-slow: 0.7s;
+  --transition-very-slow: 0.8s;
+  --transition-ease: ease;
+  --transition-cubic: cubic-bezier(0.23, 1, 0.32, 1);
+
+  /* Другие значения */
+  --blur-backdrop: 5px;
+  --hover-lift: -4px;
+  --hover-scale: 1.05;
+  --opacity-medium: 0.7;
+  --opacity-high: 0.85;
+  --breakpoint-desktop: 1200px;
+}
+
 body {
   font-family: "Inter", system-ui, sans-serif;
-  background: linear-gradient(180deg, #f7f8fa 0%, #e3e7ed 100%);
+  background: var(--gradient-background);
   margin: 0;
-  padding: 30px;
-  color: #222;
+  padding: var(--spacing-md);
+  color: var(--color-text-primary);
 }
 
 .swiper {
   width: 100%;
   max-width: 100%;
-  margin: 40px auto;
-  border-radius: 10px;
+  margin: var(--spacing-lg) auto;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   position: relative;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+  box-shadow: var(--shadow-default);
+  background-color: var(--color-background-white);
   transform: translateY(0);
-  transition: transform 0.4s ease;
+  transition: transform var(--transition-normal) var(--transition-ease);
 
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(var(--hover-lift));
   }
 
   .swiper-slide {
@@ -30,10 +73,10 @@ body {
     background-size: cover;
     background-position: center;
     overflow: hidden;
-    min-height: 350px;
+    min-height: var(--min-slide-height);
 
     &:hover img {
-      transform: scale(1.05);
+      transform: scale(var(--hover-scale));
     }
 
     > img {
@@ -43,18 +86,18 @@ body {
       inset: 0;
       object-fit: cover;
       object-position: center;
-      transition: transform 0.5s ease;
+      transition: transform var(--transition-medium) var(--transition-ease);
     }
   }
 
   .slide-content {
-    background-color: rgba(0, 0, 0, 0.45);
-    color: #fff;
-    padding: 10px 20px;
-    border-top-right-radius: 16px;
-    backdrop-filter: blur(5px);
+    background-color: var(--color-overlay-medium);
+    color: var(--color-text-white);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-top-right-radius: var(--radius-md);
+    backdrop-filter: blur(var(--blur-backdrop));
     max-width: 40%;
-    animation: fadeInUp 0.8s ease;
+    animation: fadeInUp var(--transition-very-slow) var(--transition-ease);
 
     h3 {
       margin: 0 0 6px;
@@ -65,7 +108,7 @@ body {
     p {
       margin: 0;
       font-size: clamp(0.875rem, 0.8295rem + 0.2273vw, 1rem);
-      opacity: 0.85;
+      opacity: var(--opacity-high);
       line-height: 1.5;
     }
   }
@@ -73,7 +116,7 @@ body {
   @keyframes fadeInUp {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(var(--spacing-sm));
     }
     to {
       opacity: 1;
@@ -83,35 +126,35 @@ body {
 
   .swiper-button-next,
   .swiper-button-prev {
-    color: #fff;
-    min-width: 46px;
-    min-height: 46px;
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.35);
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
+    color: var(--color-text-white);
+    min-width: var(--button-size);
+    min-height: var(--button-size);
+    padding: var(--spacing-xs);
+    background-color: var(--color-overlay-light);
+    border-radius: var(--radius-full);
+    transition: background-color var(--transition-fast) var(--transition-ease);
   }
 
   .swiper-button-next:hover,
   .swiper-button-prev:hover {
-    background: rgba(0, 0, 0, 0.6);
+    background: var(--color-overlay-dark);
   }
 
   .swiper-pagination-bullet {
-    background: #fff;
-    opacity: 0.7;
+    background: var(--color-text-white);
+    opacity: var(--opacity-medium);
   }
 
   .swiper-pagination-bullet-active {
     opacity: 1;
-    background: #007aff;
+    background: var(--color-primary);
   }
 
   [data-swiper-parallax] {
-    transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: transform var(--transition-slow) var(--transition-cubic);
   }
 
-  @media (max-width: 1200px) {
+  @media (max-width: 1199px) {
     .swiper {
       box-shadow: none;
     }

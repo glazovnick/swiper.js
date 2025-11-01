@@ -1,15 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Проверка наличия Swiper библиотеки
+  if (typeof Swiper === "undefined") {
+    console.error(
+      "Swiper.js не загружен. Убедитесь, что библиотека подключена."
+    );
+    return;
+  }
+
   const BREAKPOINT = 1200;
+  const RESIZE_DEBOUNCE = 150;
   const swiperInstances = [];
   let isSwiperActive = false;
   let resizeTimeout;
-  let isResizePending = false;
 
+  /**
+   * Инициализирует все слайдеры на странице
+   */
   function initSwipers() {
     const swipers = document.querySelectorAll(".swiper");
 
     swipers.forEach((container, index) => {
-      if (!container) return;
+      // Пропускаем, если слайдер уже инициализирован
       if (swiperInstances[index]) return;
 
       try {
@@ -31,50 +42,68 @@ document.addEventListener("DOMContentLoaded", () => {
           observer: true,
         });
       } catch (error) {
-        console.error("Ошибка при инициализации Swiper:", error);
+        console.error(`Ошибка при инициализации Swiper #${index + 1}:`, error);
       }
     });
   }
 
+  /**
+   * Уничтожает все инициализированные слайдеры
+   */
   function destroySwipers() {
     swiperInstances.forEach((instance, index) => {
       if (instance && typeof instance.destroy === "function") {
-        instance.destroy(true, true);
+        try {
+          instance.destroy(true, true);
+        } catch (error) {
+          console.error(`Ошибка при уничтожении Swiper #${index + 1}:`, error);
+        }
         swiperInstances[index] = null;
       }
     });
     swiperInstances.length = 0;
   }
 
+  /**
+   * Проверяет ширину экрана и управляет состоянием слайдеров
+   * Избегает повторной инициализации/уничтожения, если состояние уже соответствует условию
+   */
   function checkScreenWidth() {
     const isDesktop = window.innerWidth >= BREAKPOINT;
 
+    // Инициализируем только если экран >= BREAKPOINT и слайдеры еще не активны
     if (isDesktop && !isSwiperActive) {
       initSwipers();
       isSwiperActive = true;
-      console.log("Состояние слайдера: активен");
-    } else if (!isDesktop && isSwiperActive) {
+    }
+    // Уничтожаем только если экран < BREAKPOINT и слайдеры активны
+    else if (!isDesktop && isSwiperActive) {
       destroySwipers();
       isSwiperActive = false;
-      console.log("Состояние слайдера: неактивен");
     }
+    // Если состояние уже соответствует условию, ничего не делаем (избегаем повторных действий)
   }
 
+  /**
+   * Обработчик изменения размера окна с debounce
+   */
   function handleResize() {
-    if (isResizePending) return;
-    isResizePending = true;
-
     clearTimeout(resizeTimeout);
     resizeTimeout = setTimeout(() => {
       checkScreenWidth();
-      isResizePending = false;
-    }, 150);
+    }, RESIZE_DEBOUNCE);
   }
 
-  window.addEventListener("resize", handleResize);
+  // Инициализация при загрузке страницы
   checkScreenWidth();
 
+  // Обработчик изменения размера окна
+  window.addEventListener("resize", handleResize);
+
+  // Очистка при выгрузке страницы
   window.addEventListener("beforeunload", () => {
+    destroySwipers();
     window.removeEventListener("resize", handleResize);
+    clearTimeout(resizeTimeout);
   });
 });
